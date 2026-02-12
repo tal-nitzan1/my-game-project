@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document</title>
+</head>
+<body>
+
+<!DOCTYPE html>
+<head>
+<title>box</title>
+<style>
+body {
+margin: 0;
+height: 100vh;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+background-color: black;
+}
+
+h1 {
+font-family: Arial, sans-serif;
+color: white;
+}
+
+.grid {
+width: 700px;
+height: 700px;
+display: grid;
+grid-template-columns: repeat(5, 1fr);
+grid-template-rows: repeat(5, 1fr);
+gap: 8px;
+margin-top: 20px;
+padding: 8px;
+box-shadow: 0 20px 25px -5px rgv(0 0 0 / 0.5);
+}
+
+.cell {
+background-color: var(--cell-color,rgb(0, 102, 204)); 
+cursor: pointer;
+transform: scale(1);  
+transition: transform 0.3s ease, background-color 0.3s ease;
+border-radius: 16px;
+}
+
+.cell.clicked {
+transform: scale(0.9);  
+}
+
+.cell.clicked2{
+    transform: scale(1);
+}
+.value {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 16px;
+  color: white;
+  font-weight: bold;
+}
+
+.emoji {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 40px;
+  pointer-events: none; /* so clicks pass through emoji span */
+}
+
+
+</style>
+</head>
+<body>
+
+<h1>Clicks: <span id="counter">0</span></h1>
+
+<div class="grid"></div>
+
+<div class="cell">
+  <span class="value"></span>
+  <span class="emoji"></span>
+</div>
+
+<script>
+const grid = document.querySelector(".grid");
+const counterDisplay = document.getElementById("counter");
+let counter = 0;
+
+function randomColor() {
+  const r = Math.floor(Math.random() * 256);
+  const g = Math.floor(Math.random() * 256);
+  const b = Math.floor(Math.random() * 256);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+function randomInRange(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function GetNextTileData(){
+
+    var tileDataNormal = {
+        value: 1,
+        type: "Normal",
+        hp : 1,
+    };
+    var tileDataTNT = {
+        value: 5,
+        type: "TNT",
+        hp : 1,
+    };
+    var tileDataDiamond = {
+        value: 10,
+        type: "Diamond",
+        hp : 1,
+    };
+
+    var num = randomInRange(1,1000000);
+    console.log(num);
+    if(num >= 1 && num <= 750000){
+        return tileDataNormal;
+    }
+    if(num > 750000 && num <= 950000){
+        return tileDataTNT;
+    }
+    if(num > 950000 && num <= 1000000){
+        return tileDataDiamond;
+    }
+}
+
+for (let i = 0; i < 25; i++) {
+    // This is the place i'm creating the tiles
+    const cell = document.createElement("div"); 
+    cell.classList.add("cell");
+
+    var tileData = {
+        value: 1,
+        type: "Normal",
+        hp : 1,
+    };
+    
+    cell.data = tileData;
+
+    cell.addEventListener("click", function() {
+        counter+=cell.data.value;
+        cell.data.value++; // This is a simple cell - the rule for those is to always add 1 to its money value when digging.
+        counterDisplay.textContent = counter;
+
+        cell.data = GetNextTileData();
+        if(cell.data.type == "TNT"){
+            cell.innerHTML = `
+        <span class="value">`+cell.data.value+`</span>
+        <span class="emoji">🧨</span>
+    `;
+        }
+        if(cell.data.type == "Diamond"){
+            cell.innerHTML = `
+        <span class="value">`+cell.data.value+`</span>
+        <span class="emoji">💎</span>
+    `;
+        }
+        if(cell.data.type == "Normal"){
+            cell.innerHTML = `
+        <span class="value">`+cell.data.value+`</span>
+        <span class="emoji"></span>
+    `;
+        }
+
+        this.classList.add("clicked");
+
+        setTimeout(() => {
+            this.style.setProperty("--cell-color", randomColor());
+            this.classList.remove("clicked");
+        }, 150);
+
+
+        });
+
+    grid.appendChild(cell);
+}
+
+</script>
+
+</body>
+</html>
