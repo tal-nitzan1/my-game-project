@@ -6,7 +6,9 @@
 <title>Document</title>
 </head>
 <body>
-
+<audio id="soundNormal" src="click.mp3"></audio>
+<audio id="soundTNT" src="tnt.mp3"></audio>
+<audio id="soundDiamond" src="diamond.mp3"></audio>
 <!DOCTYPE html>
 <head>
 <title>box</title>
@@ -44,6 +46,7 @@ cursor: pointer;
 transform: scale(1);  
 transition: transform 0.3s ease, background-color 0.3s ease;
 border-radius: 16px;
+
 }
 
 .cell.clicked {
@@ -76,7 +79,8 @@ transform: scale(0.9);
 </head>
 <body>
 
-<h1>Clicks: <span id="counter">0</span></h1>
+<h1>Money: <span id="counter">0</span></h1>
+<h1>💎Diamond: <span id="diamondCounter">0</span></h1>
 
 <div class="grid"></div>
 
@@ -88,13 +92,23 @@ transform: scale(0.9);
 <script>
 const grid = document.querySelector(".grid");
 const counterDisplay = document.getElementById("counter");
+const diamondCounterDisplay = document.getElementById("diamondCounter");
+const clickSound = document.getElementById("clickSound");
 let counter = 0;
+let diamondCounter = 0;
+
+
 
 function randomColor() {
   const r = Math.floor(Math.random() * 256);
   const g = Math.floor(Math.random() * 256);
   const b = Math.floor(Math.random() * 256);
   return `rgb(${r}, ${g}, ${b})`;
+}
+
+function playSound(id) {
+    const sound = document.getElementById(id).cloneNode();
+    sound.play();
 }
 
 function randomInRange(min, max) {
@@ -120,14 +134,13 @@ function GetNextTileData(){
     };
 
     var num = randomInRange(1,1000000);
-    console.log(num);
-    if(num >= 1 && num <= 750000){
+    if(num >= 1 && num <= 925000){
         return tileDataNormal;
     }
-    if(num > 750000 && num <= 950000){
+    if(num > 925000 && num <= 980000){
         return tileDataTNT;
     }
-    if(num > 950000 && num <= 1000000){
+    if(num > 980000 && num <= 1000000){
         return tileDataDiamond;
     }
 }
@@ -146,11 +159,23 @@ for (let i = 0; i < 25; i++) {
     cell.data = tileData;
 
     cell.addEventListener("click", function() {
+
+        if (cell.data.type == "TNT") {
+            playSound("soundTNT");
+        } else if (cell.data.type == "Diamond") {
+            playSound("soundDiamond");
+            diamondCounter++;
+        } else {
+            playSound("soundNormal");
+        }
+        
         counter+=cell.data.value;
         cell.data.value++; // This is a simple cell - the rule for those is to always add 1 to its money value when digging.
         counterDisplay.textContent = counter;
+        diamondCounterDisplay.textContent = diamondCounter;
 
         cell.data = GetNextTileData();
+
         if(cell.data.type == "TNT"){
             cell.innerHTML = `
         <span class="value">`+cell.data.value+`</span>
@@ -169,6 +194,8 @@ for (let i = 0; i < 25; i++) {
         <span class="emoji"></span>
     `;
         }
+
+
 
         this.classList.add("clicked");
 
